@@ -1,0 +1,29 @@
+# Операционная система
+__pycache__/
+*.py[cod]
+*.swp
+
+# Виртуальное окружение
+.venv/
+.env
+
+# База данных SQLite (если используешь)
+db.sqlite3
+
+# Миграции
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Логи
+logs/
+*.log
+
+# Файлы IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Статика и медиафайлы
+static/
+media/
