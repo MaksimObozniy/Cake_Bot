@@ -3,7 +3,38 @@ from datetime import datetime
 import calendar
 
 
-def create_calendar(year, month, type_callback):
+def create_time_control_keyboard(hours=0, minutes=0):
+    def wrap_time(h, m):
+        return h % 24, m % 60
+
+    hours, minutes = wrap_time(hours, minutes)
+
+    keyboard_buttons = [
+        [
+            types.InlineKeyboardButton(
+                text="-", callback_data='time_hour_decrease'),
+            types.InlineKeyboardButton(
+                text=f"{str(hours).zfill(2)} ч.", callback_data='ignore'),
+            types.InlineKeyboardButton(
+                text="+", callback_data='time_hour_increase')
+        ],
+        [
+            types.InlineKeyboardButton(
+                text="-", callback_data='time_minute_decrease'),
+            types.InlineKeyboardButton(
+                text=f"{str(minutes).zfill(2)} м.", callback_data='ignore'),
+            types.InlineKeyboardButton(
+                text="+", callback_data='time_minute_increase')
+        ],
+        [types.InlineKeyboardButton(
+            text='Подтвердить', callback_data='time_choose')],
+        [types.InlineKeyboardButton(text="Отмена", callback_data="exit")]
+    ]
+
+    return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+
+
+def create_calendar(year, month):
     keyboard_buttons = [[types.InlineKeyboardButton(
         text='<<', callback_data=f'month_prev_{year}_{month}'),
         types.InlineKeyboardButton(
@@ -21,7 +52,7 @@ def create_calendar(year, month, type_callback):
                     text=' ', callback_data='ignore'))
             else:
                 row.append(types.InlineKeyboardButton(text=str(day),
-                           callback_data=f'{type_callback}_day_{year}_{month}_{day}'))
+                           callback_data=f'day_{year}_{month}_{day}'))
         keyboard_buttons += [row]
     keyboard_buttons += [[types.InlineKeyboardButton(
         text="Отмена", callback_data="exit")]]
@@ -98,6 +129,12 @@ def choose_decore_keyboard():
 
 def text_pass_keyboard():
     keyboard_buttons = [[types.InlineKeyboardButton(text="Пропустить", callback_data='text_pass')],
+                        [types.InlineKeyboardButton(text='Отмена', callback_data='exit')]]
+    return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+
+
+def comment_pass_keyboard():
+    keyboard_buttons = [[types.InlineKeyboardButton(text="Пропустить", callback_data='comment_pass')],
                         [types.InlineKeyboardButton(text='Отмена', callback_data='exit')]]
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 

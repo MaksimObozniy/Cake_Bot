@@ -9,10 +9,15 @@ from aiogram.enums import ParseMode
 from aiogram import F
 from aiogram.filters import CommandStart
 from bot_property.handler import (start_handler, user_name_handler, phone_number_handler,
-                                  create_order_handler, choose_text_handler)
+                                  create_order_handler, choose_text_handler, input_address_handler,
+                                  input_comment_handler)
+
 from bot_property.callback import (user_agreement_callback, exit_callback, choose_level_callback,
                                    choose_form_callback, choose_topping_callback, choose_berries_callback,
-                                   choose_decore_callback, pass_text_callback)
+                                   choose_decore_callback, pass_text_callback, swith_month_callback,
+                                   choose_date_callback, switch_time_callback, comment_pass_calback,
+                                   approve_order_callback)
+
 from bot_property.state import Authorization, CreateOrder
 
 load_dotenv()
@@ -29,6 +34,18 @@ async def main():
                         Authorization.choose_phonenumber)
     dp.message.register(create_order_handler, F.text == 'Создать заказ')
     dp.message.register(choose_text_handler, F.text, CreateOrder.choose_text)
+    dp.message.register(input_address_handler, F.text,
+                        CreateOrder.choose_addrese)
+    dp.message.register(input_comment_handler, F.text,
+                        CreateOrder.choose_comment)
+
+    dp.callback_query.register(
+        swith_month_callback, F.data.startswith('month_'))
+
+    dp.callback_query.register(
+        switch_time_callback, F.data.startswith(
+            'time_'), CreateOrder.choose_time
+    )
 
     dp.callback_query.register(
         user_agreement_callback, F.data.startswith('agreement_'), Authorization.user_agreement)
@@ -54,6 +71,16 @@ async def main():
     )
     dp.callback_query.register(
         pass_text_callback, F.data == 'text_pass'
+    )
+    dp.callback_query.register(
+        choose_date_callback, F.data.startswith(
+            'day_'), CreateOrder.choose_date
+    )
+    dp.callback_query.register(
+        comment_pass_calback, F.data == 'comment_pass'
+    )
+    dp.callback_query.register(
+        approve_order_callback, F.data == 'order_approve', CreateOrder.choose_approve
     )
 
     await dp.start_polling(bot)

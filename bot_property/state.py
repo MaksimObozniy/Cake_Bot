@@ -15,8 +15,9 @@ class CreateOrder(StatesGroup):
     choose_berries = State()
     choose_decor = State()
     choose_text = State()
-    choose_comment = State()
+
     choose_addrese = State()
     choose_date = State()
     choose_time = State()
+    choose_comment = State()
     choose_approve = State()
