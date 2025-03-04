@@ -1,6 +1,7 @@
 from aiogram import types
 from datetime import datetime
 import calendar
+from .db_helper import get_all_levels
 
 
 def create_time_control_keyboard(hours=0, minutes=0):
@@ -82,10 +83,16 @@ def user_agreement_keyboard():
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def choose_level_keyboard():
-    # Добавить наполнение из бд Заменить на кб билдер
-    keyboard_buttons = [[types.InlineKeyboardButton(text='1 уровень', callback_data='level_1')],
-                        [types.InlineKeyboardButton(text='2 уровня', callback_data='level_2')]]
+async def choose_level_keyboard():
+    keyboard_buttons = []
+    cake_levels = await get_all_levels()
+    for cake_level in cake_levels:
+        keyboard_buttons.append([types.InlineKeyboardButton(
+            text=f'{cake_level.name} - {cake_level.price} руб.',
+            callback_data=f'level_{cake_level.id}'
+        )])
+    # keyboard_buttons = [[types.InlineKeyboardButton(text='1 уровень', callback_data='level_1')],
+    #                     [types.InlineKeyboardButton(text='2 уровня', callback_data='level_2')]]
     keyboard_buttons += [[types.InlineKeyboardButton(
         text='Отмена', callback_data='exit')]]
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)

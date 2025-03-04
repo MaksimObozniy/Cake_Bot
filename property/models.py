@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime, timedelta
 
+
 class Cake_levels(models.Model):
     name = models.CharField(
         "Кол-во уровней торта",
@@ -131,34 +132,33 @@ class Order(models.Model):
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
 
-        def save(self, *args, **kwargs):
-            total = 0
+    def save(self, *args, **kwargs):
+        total = 0
 
-            if self.level:
-                total += self.level.price
+        if self.level:
+            total += self.level.price
 
-            if self.shape:
-                total += self.shape.price
+        if self.shape:
+            total += self.shape.price
 
-            if self.berries:
-                total += self.berries.price
+        if self.berries:
+            total += self.berries.price
 
-            if self.decor:
-                total += self.decor.price
+        if self.decor:
+            total += self.decor.price
 
-            if self.topping:
-                total += self.topping.price
+        if self.topping:
+            total += self.topping.price
 
-            # Доплата за срочную доставку 
-            if self.date and self.date <= datetime.now() + timedelta(hours=24):
-                total *= 1.2  
+        # Доплата за срочную доставку
+        if self.date and self.date <= datetime.now() + timedelta(hours=24):
+            total *= 1.2
 
-            
-            if self.title:
-                total += 500  
+        if self.title:
+            total += 500
 
-            self.total_price = total
-            super().save(*args, **kwargs)
+        self.total_price = total
+        super().save(*args, **kwargs)
 
-        def __str__(self):
-            return f'Заказ {self.id} для {self.user} на {self.date.strftime("%d.%m.%Y %H:%M")}'
+    def __str__(self):
+        return f'Заказ {self.id} для {self.user} на {self.date.strftime("%d.%m.%Y %H:%M")}'

@@ -47,7 +47,7 @@ async def create_order_handler(message: types.Message, state: FSMContext):
     await state.clear()
     await message.delete()
     await state.set_state(CreateOrder.choose_level)
-    await message.answer('Выбрите уровни торта', reply_markup=choose_level_keyboard())
+    await message.answer('Выбрите уровни торта', reply_markup=await choose_level_keyboard())
 
 
 async def choose_text_handler(message: types.Message, state: FSMContext):
