@@ -106,7 +106,7 @@ class User(models.Model):
         verbose_name_plural = "Пользователи"
 
     def __str__(self):
-        return f'{self.name} {self.phone_number}'
+        return f'{self.fio} {self.phone_number}'
 
 
 class Order(models.Model):

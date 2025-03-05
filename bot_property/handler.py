@@ -4,6 +4,7 @@ import datetime
 from .state import CreateOrder, Authorization
 from .keyboard import (user_agreement_keyboard, exit_keyboard, create_order_keyboard,
                        choose_level_keyboard, create_calendar, approve_order_keyboard)
+from .db_helper import check_user, create_user
 
 
 async def start_handler(message: types.Message, state: FSMContext):
@@ -12,8 +13,8 @@ async def start_handler(message: types.Message, state: FSMContext):
     await state.clear()
     await message.delete()
     tg_user_id = message.from_user.id
-    send_with_registration = False  # Затычка убрать после проверки из бд
-    if send_with_registration:
+    is_user = await check_user(tg_user_id)
+    if not is_user:
         await state.set_state(Authorization.user_agreement)
         await state.update_data({'id_user': message.from_user.id})
         # Добавить вывод в pdf
@@ -39,8 +40,8 @@ async def phone_number_handler(message: types.Message, state: FSMContext):
     await message.delete()
     await message.answer(f'Ваши данные {tg_user_id} {fio} {message.text}')
     await state.clear()
-    # Добавить наполнение + Просмотр своих заказов
-    await message.answer('Вы можете создать заказ', reply_markup=create_order_keyboard())
+    new_user = await create_user(tg_user_id, fio, message.text)
+    await message.answer(f'Вы можете создать заказ {new_user.fio}', reply_markup=create_order_keyboard())
 
 
 async def create_order_handler(message: types.Message, state: FSMContext):

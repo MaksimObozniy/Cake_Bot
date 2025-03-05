@@ -40,3 +40,18 @@ def get_all_forms():
 @sync_to_async
 def get_all_toppings():
     return list(Cake_Topping.objects.all())
+
+
+@sync_to_async
+def check_user(tg_id):
+    user = User.objects.filter(tg_id=tg_id).first()
+    if user:
+        return True
+    return False
+
+@sync_to_async
+def create_user(tg_id, fio, phone_number):
+    user = User.objects.create(tg_id=tg_id,fio=fio,phone_number=phone_number)
+    return user
+
+
