@@ -1,7 +1,7 @@
 from aiogram import types
 from datetime import datetime
 import calendar
-from .db_helper import get_all_levels
+from .db_helper import get_all_levels, get_all_berries, get_all_decors, get_all_forms, get_all_toppings
 
 
 def create_time_control_keyboard(hours=0, minutes=0):
@@ -91,44 +91,66 @@ async def choose_level_keyboard():
             text=f'{cake_level.name} - {cake_level.price} руб.',
             callback_data=f'level_{cake_level.id}'
         )])
-    # keyboard_buttons = [[types.InlineKeyboardButton(text='1 уровень', callback_data='level_1')],
-    #                     [types.InlineKeyboardButton(text='2 уровня', callback_data='level_2')]]
     keyboard_buttons += [[types.InlineKeyboardButton(
         text='Отмена', callback_data='exit')]]
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def choose_form_keyboard():
-    # Добавить наполнение из бд Заменить на кб билдер
-    keyboard_buttons = [[types.InlineKeyboardButton(text='Квадрат', callback_data='form_1')],
-                        [types.InlineKeyboardButton(text='Круг', callback_data='form_2')]]
+async def choose_form_keyboard():
+    keyboard_buttons = []
+    cake_forms = await get_all_forms()
+    for cake_form in cake_forms:
+        keyboard_buttons.append([types.InlineKeyboardButton(
+            text=f'{cake_form.name} - {cake_form.price} руб.',
+            callback_data=f'form_{cake_form.id}'
+        )])
+    # keyboard_buttons = [[types.InlineKeyboardButton(text='Квадрат', callback_data='form_1')],
+    #                     [types.InlineKeyboardButton(text='Круг', callback_data='form_2')]]
     keyboard_buttons += [[types.InlineKeyboardButton(
         text='Отмена', callback_data='exit')]]
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def choose_topping_keyboard():
-    # Добавить наполнение из бд Заменить на кб билдер
-    keyboard_buttons = [[types.InlineKeyboardButton(text='Без топпнига', callback_data='topping_1')],
-                        [types.InlineKeyboardButton(text='Белый соус', callback_data='topping_2')]]
+async def choose_topping_keyboard():
+    keyboard_buttons = []
+    cake_toppings = await get_all_toppings()
+    for cake_topping in cake_toppings:
+        keyboard_buttons.append([types.InlineKeyboardButton(
+            text=f'{cake_topping.name} - {cake_topping.price} руб.',
+            callback_data=f'topping_{cake_topping.id}'
+        )])
+    # keyboard_buttons = [[types.InlineKeyboardButton(text='Без топпнига', callback_data='topping_1')],
+    #                     [types.InlineKeyboardButton(text='Белый соус', callback_data='topping_2')]]
     keyboard_buttons += [[types.InlineKeyboardButton(
         text='Отмена', callback_data='exit')]]
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def choose_berries_keyboard():
-    # Добавить наполнение из бд Заменить на кб билдер
-    keyboard_buttons = [[types.InlineKeyboardButton(text='Ежевика', callback_data='berries_1')],
-                        [types.InlineKeyboardButton(text='Малина', callback_data='berries_2')]]
+async def choose_berries_keyboard():
+    keyboard_buttons = []
+    cake_berries = await get_all_berries()
+    for cake_berry in cake_berries:
+        keyboard_buttons.append([types.InlineKeyboardButton(
+            text=f'{cake_berry.name} - {cake_berry.price} руб.',
+            callback_data=f'berries_{cake_berry.id}'
+        )])
+    # keyboard_buttons = [[types.InlineKeyboardButton(text='Ежевика', callback_data='berries_1')],
+    #                     [types.InlineKeyboardButton(text='Малина', callback_data='berries_2')]]
     keyboard_buttons += [[types.InlineKeyboardButton(text='Пропустить', callback_data='berries_pass')],
                          [types.InlineKeyboardButton(text='Отмена', callback_data='exit')]]
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def choose_decore_keyboard():
-    # Добавить наполнение из бд Заменить на кб билдер
-    keyboard_buttons = [[types.InlineKeyboardButton(text='Фисташки', callback_data='decore_1')],
-                        [types.InlineKeyboardButton(text='Безе', callback_data='decore_2')]]
+async def choose_decore_keyboard():
+    keyboard_buttons = []
+    cake_decories = await get_all_berries()
+    for cake_decor in cake_decories:
+        keyboard_buttons.append([types.InlineKeyboardButton(
+            text=f'{cake_decor.name} - {cake_decor.price} руб.',
+            callback_data=f'decore_{cake_decor.id}'
+        )])
+    # keyboard_buttons = [[types.InlineKeyboardButton(text='Фисташки', callback_data='decore_1')],
+    #                     [types.InlineKeyboardButton(text='Безе', callback_data='decore_2')]]
     keyboard_buttons += [[types.InlineKeyboardButton(text='Пропустить', callback_data='decore_pass')],
                          [types.InlineKeyboardButton(text='Отмена', callback_data='exit')]]
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)

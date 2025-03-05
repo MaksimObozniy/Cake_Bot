@@ -30,7 +30,7 @@ async def choose_level_callback(callback: types.CallbackQuery, state: FSMContext
     data = callback.data.split("_")[1]
     await state.update_data({'level': int(data)})
     await state.set_state(CreateOrder.choose_form)
-    await callback.message.answer(text='Выберите форму торта', reply_markup=choose_form_keyboard())
+    await callback.message.answer(text='Выберите форму торта', reply_markup=await choose_form_keyboard())
 
 
 async def choose_form_callback(callback: types.CallbackQuery, state: FSMContext):
@@ -38,7 +38,7 @@ async def choose_form_callback(callback: types.CallbackQuery, state: FSMContext)
     data = callback.data.split("_")[1]
     await state.update_data({'form': int(data)})
     await state.set_state(CreateOrder.choose_topping)
-    await callback.message.answer(text='Выберите топинг', reply_markup=choose_topping_keyboard())
+    await callback.message.answer(text='Выберите топинг', reply_markup=await choose_topping_keyboard())
 
 
 async def choose_topping_callback(callback: types.CallbackQuery, state: FSMContext):
@@ -46,7 +46,7 @@ async def choose_topping_callback(callback: types.CallbackQuery, state: FSMConte
     data = callback.data.split("_")[1]
     await state.update_data({'topping': int(data)})
     await state.set_state(CreateOrder.choose_berries)
-    await callback.message.answer(text='Выберите ягоды', reply_markup=choose_berries_keyboard())
+    await callback.message.answer(text='Выберите ягоды', reply_markup=await choose_berries_keyboard())
 
 
 async def choose_berries_callback(callback: types.CallbackQuery, state: FSMContext):
@@ -55,7 +55,7 @@ async def choose_berries_callback(callback: types.CallbackQuery, state: FSMConte
     if data != 'pass':
         await state.update_data({'berries': int(data)})
     await state.set_state(CreateOrder.choose_decor)
-    await callback.message.answer(text='Выберите декор', reply_markup=choose_decore_keyboard())
+    await callback.message.answer(text='Выберите декор', reply_markup=await choose_decore_keyboard())
 
 
 async def choose_decore_callback(callback: types.CallbackQuery, state: FSMContext):
