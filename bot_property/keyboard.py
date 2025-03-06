@@ -143,7 +143,7 @@ async def choose_berries_keyboard():
 
 async def choose_decore_keyboard():
     keyboard_buttons = []
-    cake_decories = await get_all_berries()
+    cake_decories = await get_all_decors()
     for cake_decor in cake_decories:
         keyboard_buttons.append([types.InlineKeyboardButton(
             text=f'{cake_decor.name} - {cake_decor.price} руб.',

@@ -125,7 +125,8 @@ class Order(models.Model):
     berries = models.ForeignKey(
         Cake_Berries, on_delete=models.CASCADE, null=True)
     decor = models.ForeignKey(Cake_Decor, on_delete=models.CASCADE, null=True)
-    topping = models.ForeignKey(Cake_Topping,on_delete=models.CASCADE, null=True, blank=True)
+    topping = models.ForeignKey(
+        Cake_Topping, on_delete=models.CASCADE, null=True, blank=True)
     total_price = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True)
 

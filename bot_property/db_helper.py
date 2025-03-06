@@ -4,7 +4,7 @@ from asgiref.sync import sync_to_async
 import os
 import sys
 from django import setup
-
+from datetime import datetime
 child_directory = os.path.dirname(__file__)
 parent_directory = os.path.dirname(child_directory)
 sys.path.append(os.path.join(parent_directory, 'Cake_Bot'))
@@ -56,18 +56,21 @@ def create_user(tg_id, fio, phone_number):
     return user
 
 @sync_to_async
-def create_order(**order_input):
+def create_order(order_input):
     new_order = Order()
     tg_id = order_input['tg_id']
     user = User.objects.filter(tg_id=tg_id).first()
+    print(tg_id,user)
+    dt =  datetime(order_input['year'], order_input['month'], order_input['day'], order_input['hours'], order_input['minutes'])
     new_order.user = user
-    new_order.adress = order_input['adress']
-    new_order.date = order_input['date']
-    new_order.title = order_input['title']
+    new_order.adress = order_input['address']
+    new_order.date = dt
+    if 'text' in order_input:
+        new_order.title = order_input['text']
     new_order.level = Cake_levels.objects.filter(id=order_input['level']).first() 
-    new_order.shape = Cake_Shape.objects.filter(id=order_input['shape']).first()
+    new_order.shape = Cake_Shape.objects.filter(id=order_input['form']).first()
     if 'berries' in order_input:
-        new_order.berries = Cake_Berries.objects.filter(id=order_input['shape']).first()
+        new_order.berries = Cake_Berries.objects.filter(id=order_input['berries']).first()
     if 'decor' in order_input:
         new_order.decor = Cake_Decor.objects.filter(id=order_input['decor']).first()
     if 'topping' in order_input:

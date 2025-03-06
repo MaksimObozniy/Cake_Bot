@@ -79,13 +79,8 @@ async def pass_text_callback(callback: types.CallbackQuery, state: FSMContext):
 async def swith_month_callback(callback: types.CallbackQuery, state: FSMContext):
     data = callback.data.split("_")[1]
     state_data = await state.get_data()
-    if 'year_last' not in state_data:
-        current_year = state_data['year_first']
-        current_month = state_data['month_first']
-    else:
-        current_year = state_data['year_last']
-        current_month = state_data['month_last']
-
+    current_year = state_data['year']
+    current_month = state_data['month']
     if data == 'prev':
         if current_month - 1 <= 0:
             current_year -= 1
@@ -98,12 +93,8 @@ async def swith_month_callback(callback: types.CallbackQuery, state: FSMContext)
             current_month = 1
         else:
             current_month += 1
-    if 'year_last' not in state_data:
-        await state.update_data({'year_first': current_year, 'month_first': current_month})
-        await callback.message.edit_text(text='Выберите к какого числа приготовить торт', reply_markup=create_calendar(current_year, current_month))
-    else:
-        await state.update_data({'year_last': current_year, 'month_last': current_month})
-        await callback.message.edit_text(text='Выберите к какого числа приготовить торт', reply_markup=create_calendar(current_year, current_month))
+    await state.update_data({'year': current_year, 'month': current_month})
+    await callback.message.edit_text(text='Выберите к какого числа приготовить торт', reply_markup=create_calendar(current_year, current_month))
 
 
 async def choose_date_callback(callback: types.CallbackQuery, state: FSMContext):
@@ -114,7 +105,7 @@ async def choose_date_callback(callback: types.CallbackQuery, state: FSMContext)
     now = datetime.datetime.now()
     hour = now.hour
     minute = now.minute
-    await state.update_data({'current_hours': hour, "current_minutes": minute})
+    await state.update_data({'hours': hour, "minutes": minute})
     await callback.message.answer(text='Выберите время когда хотите забрать заказ', reply_markup=create_time_control_keyboard(hour, minute))
 
 
@@ -122,8 +113,8 @@ async def switch_time_callback(callback: types.CallbackQuery, state: FSMContext)
     if callback.data.split('_')[1] != 'choose':
         data = callback.data.removeprefix("time_")
         time_data = await state.get_data()
-        current_hours = time_data['current_hours']
-        current_minutes = time_data['current_minutes']
+        current_hours = time_data['hours']
+        current_minutes = time_data['minutes']
         if data == 'hour_decrease':
             if current_hours - 1 < 1:
                 current_hours = 23
@@ -149,7 +140,7 @@ async def switch_time_callback(callback: types.CallbackQuery, state: FSMContext)
                     current_minutes = 0
             else:
                 current_minutes += 1
-        await state.update_data({'current_hours': current_hours, "current_minutes": current_minutes})
+        await state.update_data({'hours': current_hours, "minutes": current_minutes})
         await callback.message.edit_text(text='Выберите время когда хотите забрать заказ', reply_markup=create_time_control_keyboard(current_hours, current_minutes))
     else:
         # Тут добавить условия с заказом про 24 часа

@@ -16,12 +16,11 @@ async def start_handler(message: types.Message, state: FSMContext):
     is_user = await check_user(tg_user_id)
     if not is_user:
         await state.set_state(Authorization.user_agreement)
-        await state.update_data({'id_user': message.from_user.id})
+        await state.update_data({'tg_id': message.from_user.id})
         # Добавить вывод в pdf
         await message.answer('Пользовательское сошлашение',
                              reply_markup=user_agreement_keyboard())
     else:
-        # Добавить наполнение
         await message.answer('Вы можете создать заказ', reply_markup=create_order_keyboard())
 
 
@@ -35,7 +34,7 @@ async def user_name_handler(message: types.Message, state: FSMContext):
 async def phone_number_handler(message: types.Message, state: FSMContext):
     # Тут добавить сохранение в бд
     data = await state.get_data()
-    tg_user_id = data['id_user']
+    tg_user_id = data['tg_id']
     fio = data['fio']
     await message.delete()
     await message.answer(f'Ваши данные {tg_user_id} {fio} {message.text}')
@@ -63,10 +62,11 @@ async def choose_text_handler(message: types.Message, state: FSMContext):
 async def input_address_handler(message: types.Message, state: FSMContext):
     # Добавить вывод предварительной стоимости с учетом подсчета
     await message.delete()
+    await state.update_data({'tg_id': message.from_user.id})
     await state.update_data({'address': message.text})
     current_year = datetime.datetime.now().year
     current_month = datetime.datetime.now().month
-    await state.update_data({"year_first": current_year, "month_first": current_month})
+    await state.update_data({"year": current_year, "month": current_month})
     await state.set_state(CreateOrder.choose_date)
     await message.answer('Выберите дату доставки', reply_markup=create_calendar(current_year, current_month))
 
