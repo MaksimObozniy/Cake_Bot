@@ -73,7 +73,8 @@ def exit_keyboard():
 
 
 def create_order_keyboard():
-    keyboard_buttons = [[types.KeyboardButton(text="Создать заказ")]]
+    keyboard_buttons = [[types.KeyboardButton(text="Создать заказ")], [
+        types.KeyboardButton(text='Мои заказы')]]
     return types.ReplyKeyboardMarkup(keyboard=keyboard_buttons)
 
 
@@ -171,4 +172,20 @@ def comment_pass_keyboard():
 def approve_order_keyboard():
     keyboard_buttons = [[types.InlineKeyboardButton(text="Подтвердить заказ", callback_data='order_approve')],
                         [types.InlineKeyboardButton(text='Отмена', callback_data='exit')]]
+    return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+
+
+def my_orders_keyboard(orders, number):
+    orders_count = len(orders)
+    info = orders[number]
+    if len(orders) > 1:
+        keyboard_buttons = [[types.InlineKeyboardButton(text='<-', callback_data='my_order_prev'), types.InlineKeyboardButton(text=f'{number}/{orders_count}', callback_data='my_order_info'),
+                            types.InlineKeyboardButton(text='<-', callback_data='my_order_next')],
+                            [types.InlineKeyboardButton(text=f'Адрес:{str(info.adress)} Дата: {info.date.strftime('%d-%m-%Y %H-%M')}', callback_data='my_order_info')]]
+    else:
+        keyboard_buttons = [[types.InlineKeyboardButton(
+            text=f'Адрес:{str(info.adress)} Дата: {info.date.strftime('%d-%m-%Y %H-%M')}', callback_data='my_order_info')]]
+    keyboard_buttons += [[types.InlineKeyboardButton(
+        text='Отмена', callback_data='exit')]]
+
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)

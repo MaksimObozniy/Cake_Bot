@@ -10,13 +10,13 @@ from aiogram import F
 from aiogram.filters import CommandStart
 from bot_property.handler import (start_handler, user_name_handler, phone_number_handler,
                                   create_order_handler, choose_text_handler, input_address_handler,
-                                  input_comment_handler)
+                                  input_comment_handler, get_my_orders_hadler)
 
 from bot_property.callback import (user_agreement_callback, exit_callback, choose_level_callback,
                                    choose_form_callback, choose_topping_callback, choose_berries_callback,
                                    choose_decore_callback, pass_text_callback, swith_month_callback,
                                    choose_date_callback, switch_time_callback, comment_pass_calback,
-                                   approve_order_callback)
+                                   approve_order_callback, swith_orders_callback)
 
 from bot_property.state import Authorization, CreateOrder
 
@@ -38,6 +38,7 @@ async def main():
                         CreateOrder.choose_addrese)
     dp.message.register(input_comment_handler, F.text,
                         CreateOrder.choose_comment)
+    dp.message.register(get_my_orders_hadler, F.text == 'Мои заказы')
 
     dp.callback_query.register(
         swith_month_callback, F.data.startswith('month_'))
@@ -81,6 +82,9 @@ async def main():
     )
     dp.callback_query.register(
         approve_order_callback, F.data == 'order_approve', CreateOrder.choose_approve
+    )
+    dp.callback_query.register(
+        swith_orders_callback, F.data.startswith('my_order')
     )
 
     await dp.start_polling(bot)

@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 import datetime
 from .state import CreateOrder, Authorization
 from .keyboard import (user_agreement_keyboard, exit_keyboard, create_order_keyboard,
-                       choose_level_keyboard, create_calendar, approve_order_keyboard)
-from .db_helper import check_user, create_user
+                       choose_level_keyboard, create_calendar, approve_order_keyboard, my_orders_keyboard)
+from .db_helper import check_user, create_user, get_my_orders
 
 
 async def start_handler(message: types.Message, state: FSMContext):
@@ -76,3 +76,13 @@ async def input_comment_handler(message: types.Message, state: FSMContext):
     await state.update_data({'comment': message.text})
     await state.set_state(CreateOrder.choose_approve)
     await message.answer("Подтвердите заказ", reply_markup=approve_order_keyboard())
+
+
+async def get_my_orders_hadler(message: types.Message, state: FSMContext):
+    tg_id = message.from_user.id
+    orders = await get_my_orders(tg_id)
+    await state.update_data({'order_number': 0, 'tg_id': message.from_user.id})
+    if orders:
+        await message.answer('Ваши заказы', reply_markup=my_orders_keyboard(orders, 0))
+    else:
+        await message.answer('Вы еще не совершили ни одного заказа')

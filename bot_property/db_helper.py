@@ -80,4 +80,11 @@ def create_order(order_input):
     new_order.save()
     return new_order
 
+@sync_to_async
+def get_my_orders(tg_id):
+    user = User.objects.filter(tg_id=tg_id).first()
+    orders = Order.objects.filter(user=user)
+    orders = [order for order in orders]
+    return orders
+
 

@@ -4,8 +4,8 @@ from .state import Authorization, CreateOrder
 from .keyboard import (exit_keyboard, choose_form_keyboard, choose_topping_keyboard,
                        choose_berries_keyboard, choose_decore_keyboard, text_pass_keyboard,
                        create_calendar, create_time_control_keyboard, comment_pass_keyboard,
-                       approve_order_keyboard)
-from .db_helper import create_order
+                       approve_order_keyboard, my_orders_keyboard)
+from .db_helper import create_order, get_my_orders
 
 import datetime
 
@@ -162,3 +162,28 @@ async def approve_order_callback(callback: types.CallbackQuery, state: FSMContex
     new_order = await create_order(state_data)
     await state.clear()
     await callback.message.answer(f'Ваш заказ №{new_order.id} создан\n {order_str}')
+
+
+async def swith_orders_callback(callback: types.CallbackQuery, state: FSMContext):
+    data = callback.data.split('_')[2]
+    order_data = await state.get_data()
+    number = order_data['order_number']
+    tg_id = order_data['tg_id']
+    orders = await get_my_orders(tg_id)
+    if data == 'next':
+        if number + 1 > len(orders) - 1:
+            number = 0
+        else:
+            number += 1
+        await callback.message.edit_text(text='Ваши заказы', reply_markup=my_orders_keyboard(orders, number))
+    if data == 'prev':
+        if number - 1 < 0:
+            number = len(orders) - 1
+        else:
+            number -= 1
+        await callback.message.edit_text(text='Ваши заказы', reply_markup=my_orders_keyboard(orders, number))
+    if data == 'info':
+        print(data)
+        order = orders[number]
+        info = 'Тут вывод должен быть'
+        await callback.answer('Тут должно быть описание заказа')
