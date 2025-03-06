@@ -15,6 +15,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Cake_Bot.settings')
 
 django.setup()
 
+
 from property.models import Cake_Berries, Cake_Decor, Cake_levels, Cake_Shape, Cake_Topping, Order, User
 
 @sync_to_async
@@ -53,5 +54,27 @@ def check_user(tg_id):
 def create_user(tg_id, fio, phone_number):
     user = User.objects.create(tg_id=tg_id,fio=fio,phone_number=phone_number)
     return user
+
+@sync_to_async
+def create_order(**order_input):
+    new_order = Order()
+    tg_id = order_input['tg_id']
+    user = User.objects.filter(tg_id=tg_id).first()
+    new_order.user = user
+    new_order.adress = order_input['adress']
+    new_order.date = order_input['date']
+    new_order.title = order_input['title']
+    new_order.level = Cake_levels.objects.filter(id=order_input['level']).first() 
+    new_order.shape = Cake_Shape.objects.filter(id=order_input['shape']).first()
+    if 'berries' in order_input:
+        new_order.berries = Cake_Berries.objects.filter(id=order_input['shape']).first()
+    if 'decor' in order_input:
+        new_order.decor = Cake_Decor.objects.filter(id=order_input['decor']).first()
+    if 'topping' in order_input:
+        new_order.topping = Cake_Topping.objects.filter(id=order_input['topping']).first()
+    if 'comments' in order_input:
+        new_order.comment = order_input['comment']
+    new_order.save()
+    return new_order
 
 

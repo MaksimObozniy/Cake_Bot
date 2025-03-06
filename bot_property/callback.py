@@ -5,6 +5,7 @@ from .keyboard import (exit_keyboard, choose_form_keyboard, choose_topping_keybo
                        choose_berries_keyboard, choose_decore_keyboard, text_pass_keyboard,
                        create_calendar, create_time_control_keyboard, comment_pass_keyboard,
                        approve_order_keyboard)
+from .db_helper import create_order
 
 import datetime
 
@@ -167,5 +168,6 @@ async def approve_order_callback(callback: types.CallbackQuery, state: FSMContex
     await callback.message.delete()
     state_data = await state.get_data()
     order_str = "\n".join(map(str, state_data.values()))
+    new_order = await create_order(state_data)
     await state.clear()
-    await callback.message.answer(f'Ваш заказ\n {order_str}')
+    await callback.message.answer(f'Ваш заказ №{new_order.id} создан\n {order_str}')
