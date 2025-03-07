@@ -14,11 +14,26 @@ async def start_handler(message: types.Message, state: FSMContext):
     await message.delete()
     tg_user_id = message.from_user.id
     is_user = await check_user(tg_user_id)
+    consent_text = (
+        "Согласие на обработку персональных данных\n\n"
+        "Нажимая кнопку «Подтвердить», вы даёте своё согласие боту Cake_bot, "
+        "его владельцу и администраторам на обработку ваших персональных данных, а именно:\n\n"
+        "Фамилии и имени;\n"
+        "Номера телефона;\n"
+        "Адреса доставки.\n"
+        "Ваши данные будут использованы исключительно для:\n\n"
+        "Оформления и доставки заказов;\n"
+        "Связи с вами для уточнения деталей;\n"
+        "Улучшения качества сервиса.\n"
+        "Ваши персональные данные не будут переданы третьим лицам, за исключением случаев, предусмотренных законом или необходимых для выполнения вашего заказа (например, курьерским службам).\n\n"
+        "Согласие действует с момента его предоставления и может быть отозвано вами в любое время путём обращения к администрации бота.\n\n"
+        "Нажимая кнопку, вы подтверждаете, что ознакомлены с условиями, согласны с ними и даёте своё согласие на обработку ваших данных."
+    )
     if not is_user:
         await state.set_state(Authorization.user_agreement)
         await state.update_data({'tg_id': message.from_user.id})
         # Добавить вывод в pdf
-        await message.answer('Пользовательское сошлашение',
+        await message.answer(consent_text,
                              reply_markup=user_agreement_keyboard())
     else:
         await message.answer('Вы можете создать заказ', reply_markup=create_order_keyboard())
@@ -81,8 +96,8 @@ async def input_comment_handler(message: types.Message, state: FSMContext):
 async def get_my_orders_hadler(message: types.Message, state: FSMContext):
     tg_id = message.from_user.id
     orders = await get_my_orders(tg_id)
-    await state.update_data({'order_number': 0, 'tg_id': message.from_user.id})
+    await state.update_data({'order_number': 1, 'tg_id': message.from_user.id})
     if orders:
-        await message.answer('Ваши заказы', reply_markup=my_orders_keyboard(orders, 0))
+        await message.answer('Ваши заказы', reply_markup=my_orders_keyboard(orders, 1))
     else:
         await message.answer('Вы еще не совершили ни одного заказа')

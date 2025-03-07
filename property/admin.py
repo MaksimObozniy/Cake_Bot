@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Cake_levels, Cake_Shape, Cake_Topping, Cake_Berries, Cake_Decor, User, Order
+from .models import Cake_levels, Cake_Shape, Cake_Topping, Cake_Berries, Cake_Decor, User, Order, CustomUser, ClickCounter
+
+
+admin.site.register(ClickCounter)
 
 
 @admin.register(User)
@@ -7,6 +10,11 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'fio', 'phone_number', 'tg_id')
     search_fields = ('phone_number', 'tg_id', 'fio')
     ordering = ('id', 'fio')
+
+
+@admin.register(CustomUser)
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('tg_id', 'tg_name')
 
 
 @admin.register(Order)

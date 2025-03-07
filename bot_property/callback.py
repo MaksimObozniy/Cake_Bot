@@ -5,9 +5,47 @@ from .keyboard import (exit_keyboard, choose_form_keyboard, choose_topping_keybo
                        choose_berries_keyboard, choose_decore_keyboard, text_pass_keyboard,
                        create_calendar, create_time_control_keyboard, comment_pass_keyboard,
                        approve_order_keyboard, my_orders_keyboard)
-from .db_helper import create_order, get_my_orders
-
+from .db_helper import create_order, get_my_orders, get_admins,get_dict_order
+import asyncio
 import datetime
+
+
+def format_order(order):
+   
+    tg_id = order.get("tg_id", "Не указано")
+    year = order.get("year", "")
+    month = order.get("month", "")
+    day = order.get("day", "")
+    hours = order.get("hours", "")
+    minutes = order.get("minutes", "")
+
+    if year and month and day and hours is not None and minutes is not None:
+        delivery_date = f"{day:02d}-{month:02d}-{str(year)[-2:]} {hours:02d}:{minutes:02d}"
+    else:
+        delivery_date = "Не указана"
+
+    text = order.get("text", "Не указано")
+    comments = order.get("comments", "Не указано")
+    level = order.get("level", "Не указано")
+    form = order.get("form", "Не указано")
+    berries = order.get("berries", "Не указано")
+    decor = order.get("decor", "Не указано")
+    topping = order.get("topping", "Не указано")
+
+    
+    result = (
+        f"Заказ от пользователя: {tg_id}\n"
+        f"Дата доставки: {delivery_date}\n"
+        f"Надпись на торте: {text}\n"
+        f"Комментарий: {comments}\n"
+        f"Уровни торта: {level}\n"
+        f"Форма: {form}\n"
+        f"Ягоды: {berries}\n"
+        f"Декор: {decor}\n"
+        f"Топпинг: {topping}"
+    )
+
+    return result
 
 
 async def exit_callback(callback: types.CallbackQuery, state: FSMContext):
@@ -158,10 +196,14 @@ async def comment_pass_calback(callback: types.CallbackQuery, state: FSMContext)
 async def approve_order_callback(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.delete()
     state_data = await state.get_data()
-    order_str = "\n".join(map(str, state_data.values()))
-    new_order = await create_order(state_data)
+    await create_order(state_data)
     await state.clear()
-    await callback.message.answer(f'Ваш заказ №{new_order.id} создан\n {order_str}')
+    admins = await get_admins()
+    print(admins)
+    await callback.message.answer(format_order(state_data))
+    for admin in admins:
+        await callback.bot.send_message(admin.tg_id, format_order(state_data))
+        asyncio.sleep(3)
 
 
 async def swith_orders_callback(callback: types.CallbackQuery, state: FSMContext):
@@ -172,18 +214,20 @@ async def swith_orders_callback(callback: types.CallbackQuery, state: FSMContext
     orders = await get_my_orders(tg_id)
     if data == 'next':
         if number + 1 > len(orders) - 1:
-            number = 0
+            number = 1
         else:
             number += 1
+        await state.update_data({'order_number':number})
         await callback.message.edit_text(text='Ваши заказы', reply_markup=my_orders_keyboard(orders, number))
     if data == 'prev':
         if number - 1 < 0:
             number = len(orders) - 1
         else:
             number -= 1
+        await state.update_data({'order_number':number})
         await callback.message.edit_text(text='Ваши заказы', reply_markup=my_orders_keyboard(orders, number))
     if data == 'info':
         print(data)
-        order = orders[number]
-        info = 'Тут вывод должен быть'
-        await callback.answer('Тут должно быть описание заказа')
+        order = await get_dict_order(orders[number].id)
+        info = format_order(order)
+        await callback.message.answer(info)

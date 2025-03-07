@@ -17,8 +17,9 @@ from bot_property.callback import (user_agreement_callback, exit_callback, choos
                                    choose_decore_callback, pass_text_callback, swith_month_callback,
                                    choose_date_callback, switch_time_callback, comment_pass_calback,
                                    approve_order_callback, swith_orders_callback)
-
+from bot_property.sheduler import update_clicks
 from bot_property.state import Authorization, CreateOrder
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 load_dotenv()
 TOKEN = environ['BOT_TOKEN']
@@ -86,8 +87,11 @@ async def main():
     dp.callback_query.register(
         swith_orders_callback, F.data.startswith('my_order')
     )
-
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(update_clicks, 'interval', minutes=1)
+    scheduler.start()
     await dp.start_polling(bot)
+    
 
 
 if __name__ == '__main__':

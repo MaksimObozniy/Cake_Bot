@@ -16,7 +16,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Cake_Bot.settings')
 django.setup()
 
 
-from property.models import Cake_Berries, Cake_Decor, Cake_levels, Cake_Shape, Cake_Topping, Order, User
+from property.models import Cake_Berries, Cake_Decor, Cake_levels, Cake_Shape, Cake_Topping, Order, User, CustomUser
 
 @sync_to_async
 def get_all_levels():
@@ -56,6 +56,10 @@ def create_user(tg_id, fio, phone_number):
     return user
 
 @sync_to_async
+def get_admins():
+    return list(CustomUser.objects.all())
+
+@sync_to_async
 def create_order(order_input):
     new_order = Order()
     tg_id = order_input['tg_id']
@@ -81,10 +85,17 @@ def create_order(order_input):
     return new_order
 
 @sync_to_async
+def get_dict_order(order_id):
+    order = Order.objects.filter(id=order_id).first()
+    return order.to_dict()
+
+@sync_to_async
 def get_my_orders(tg_id):
     user = User.objects.filter(tg_id=tg_id).first()
     orders = Order.objects.filter(user=user)
     orders = [order for order in orders]
     return orders
+
+
 
 

@@ -109,6 +109,20 @@ class User(models.Model):
         return f'{self.fio} {self.phone_number}'
 
 
+class CustomUser(models.Model):
+    tg_id = models.CharField("tg id пользователя",
+                             max_length=50, null=True)
+    tg_name = models.CharField("Имя пользователя",
+                               max_length=50, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Админ"
+        verbose_name_plural = "Администраторы"
+
+    def __str__(self):
+        return f'{self.tg_id} {self.tg_name}'
+
+
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
@@ -129,6 +143,24 @@ class Order(models.Model):
         Cake_Topping, on_delete=models.CASCADE, null=True, blank=True)
     total_price = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True)
+    
+
+    def to_dict(self):
+        return {
+            "tg_id": self.user.tg_id, 
+            "year": self.date.year,
+            "month": self.date.month,
+            "day": self.date.day,
+            "hours": self.date.hour,
+            "minutes": self.date.minute,
+            "text": self.title if self.title else "Не указано",
+            "comments": self.comment if self.comment else "Не указано",
+            "level": self.level.name if self.level else "Не указано",  
+            "form": self.shape.name if self.shape else "Не указано",  
+            "berries": self.berries.name if self.berries else "Не указано", 
+            "decor": self.decor.name if self.decor else "Не указано",  
+            "topping": self.topping.name if self.topping else "Не указано",  
+        }
 
     class Meta:
         verbose_name = "Заказ"
@@ -164,3 +196,10 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Заказ {self.id} для {self.user} на {self.date.strftime("%d.%m.%Y %H:%M")}'
+
+
+class ClickCounter(models.Model):
+    clicks = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.clicks}"

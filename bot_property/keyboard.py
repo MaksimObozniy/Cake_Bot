@@ -178,9 +178,10 @@ def approve_order_keyboard():
 def my_orders_keyboard(orders, number):
     orders_count = len(orders)
     info = orders[number]
+    print(number, orders_count)
     if len(orders) > 1:
         keyboard_buttons = [[types.InlineKeyboardButton(text='<-', callback_data='my_order_prev'), types.InlineKeyboardButton(text=f'{number}/{orders_count}', callback_data='my_order_info'),
-                            types.InlineKeyboardButton(text='<-', callback_data='my_order_next')],
+                            types.InlineKeyboardButton(text='->', callback_data='my_order_next')],
                             [types.InlineKeyboardButton(text=f'Адрес:{str(info.adress)} Дата: {info.date.strftime('%d-%m-%Y %H-%M')}', callback_data='my_order_info')]]
     else:
         keyboard_buttons = [[types.InlineKeyboardButton(
